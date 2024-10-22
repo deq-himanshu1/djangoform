@@ -13,6 +13,9 @@ def user_profile_view(request):
             address.user = user_profile  # Associate the address with the user
             address.save()  # Now save the address
 
+            if address.is_default:
+                Address.objects.filter(user=user_profile).exclude(id=address.id).update(is_default=False)
+
             return redirect('success')  # Redirect to success page
     else:
         user_form = UserProfileForm()

@@ -16,4 +16,4 @@ class Address(models.Model):
     is_default = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.address
+        return f"{self.user.first_name} {self.user.last_name} - {self.address}"
