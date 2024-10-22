@@ -1,19 +1,24 @@
 from django.shortcuts import render, redirect
-
-# Create your views here.
-
-from .forms import UserProfileForm
-
-
+from .forms import UserProfileForm, AddressForm
+from .models import UserProfile, Address
 
 def user_profile_view(request):
     if request.method == 'POST':
-        form = UserProfileForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('user_profile')  # Redirect to the user_profile page
+        user_form = UserProfileForm(request.POST)
+        address_form = AddressForm(request.POST)
+
+        if user_form.is_valid() and address_form.is_valid():
+            user_profile = user_form.save()  # Save the UserProfile
+            address = address_form.save(commit=False)  # Don't save yet
+            address.user = user_profile  # Associate the address with the user
+            address.save()  # Now save the address
+
+            return redirect('success')  # Redirect to success page
     else:
-        form = UserProfileForm()
-    return render(request, 'myapp/user.html', {'form': form})
+        user_form = UserProfileForm()
+        address_form = AddressForm()
+
+    return render(request, 'frontend/user.html', {'user_form': user_form, 'address_form': address_form})
+
 def success_view(request):
-    return render(request, 'myapp/success.html')
+    return render(request, 'frontend/success.html')
